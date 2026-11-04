@@ -52,7 +52,7 @@ velocity :: Float -> Apecs.System World ()
 velocity dT = Apecs.cmap \(Position pos, Velocity vel) -> Position $ pos + vel ^* dT
 
 gravity :: Float -> Apecs.System World ()
-gravity dT = Apecs.cmap \(Velocity vel) -> Position $ vel + gravityVel ^* dT
+gravity dT = Apecs.cmap \(Velocity vel) -> Velocity $ vel + gravityVel ^* dT
   where gravityVel = V2 0 (-1)
 
 handleEvent :: Brillo.Event -> Apecs.System World ()

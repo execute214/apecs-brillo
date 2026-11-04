@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           apecs-brillo
-version:        0.2.0.0
+version:        0.2.0.1
 synopsis:       Apecs' gloss package, but adapted for brillo.
 description:    A library that's meant to bridge the gap between brillo and gloss.
 category:       Game engine

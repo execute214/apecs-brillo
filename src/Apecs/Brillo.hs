@@ -4,13 +4,6 @@
 module Apecs.Brillo
   ( Camera(..)
 
-  , Brillo.Event(..)
-  , Brillo.Key(..)
-  , Brillo.SpecialKey(..)
-  , Brillo.MouseButton(..)
-  , Brillo.KeyState(..)
-  , Brillo.Modifiers(..)
-
   , playWithApecs
 
   , cameraTransform
@@ -18,6 +11,14 @@ module Apecs.Brillo
 
   , cfoldDraw
   , cfoldDrawM
+
+  -- * Brillo re-exports
+  , Brillo.Event(..)
+  , Brillo.Key(..)
+  , Brillo.SpecialKey(..)
+  , Brillo.MouseButton(..)
+  , Brillo.KeyState(..)
+  , Brillo.Modifiers(..)
   ) where
 
 import Brillo qualified
