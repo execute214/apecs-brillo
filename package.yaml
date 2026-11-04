@@ -1,38 +1,17 @@
-name:                apecs-brillo
-version:             0.1.1.1 # slight revisions
-git:                 "https://github.com/execute214/apecs-brillo"
-license:             BSD-3-Clause
-author:              "Execute"
-maintainer:          "execute@erisws.com"
-copyright:           "2017 Jonas Carpay, Execute"
+name: apecs-brillo
+version: 0.2.0.0
+git: "https://github.com/execute214/apecs-brillo"
+license: BSD-3-Clause
+author: "Execute"
+copyright: "2017 Jonas Carpay, Execute"
 
 extra-doc-files:
 - README.md
 - CHANGELOG.md
 
-synopsis:            Apecs' gloss package, but adapted for brillo.
-category:            Game engine
-description:         Please see the README on Codeberg at <https://github.com/execute214/apecs-brillo#readme>
-
-dependencies:
-- base >= 4.7 && < 5
-- brillo >= 2 && < 3
-- brillo-rendering >= 2 && < 3
-- apecs >= 0.7 && < 0.11
-- apecs-physics >= 0.3 && < 5
-- linear >= 1.2 && < 2
-- containers >= 0.5 && < 0.8
-
-ghc-options:
-- -Wall
-- -Wcompat
-- -Widentities
-- -Wincomplete-record-updates
-- -Wincomplete-uni-patterns
-- -Wmissing-export-lists
-- -Wmissing-home-modules
-- -Wpartial-fields
-- -Wredundant-constraints
+synopsis: Apecs' gloss package, but adapted for brillo.
+category: Game engine
+description: A library that's meant to bridge the gap between brillo and gloss.
 
 library:
   source-dirs: src
@@ -47,3 +26,74 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - apecs-brillo
+
+executables:
+  example-balls:
+    main: Main.hs
+    source-dirs: examples/balls
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - apecs-brillo
+
+dependencies:
+- base >= 4.8 && < 5
+- brillo >= 3 && < 4
+- brillo-rendering >= 3 && < 4
+- apecs >= 0.7 && < 0.11
+- linear >= 1.2 && < 2
+- containers >= 0.5 && < 0.8
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Wimplicit-lift
+- -Wincomplete-patterns
+- -Wincomplete-patterns
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-exported-signatures
+- -Wmissing-methods
+- -Wmissing-signatures
+- -Wname-shadowing
+- -Wno-deprecations
+- -Wredundant-bang-patterns
+- -Wredundant-constraints
+- -Wunused-packages
+
+default-extensions:
+- TemplateHaskell
+- ImportQualifiedPost
+- DuplicateRecordFields
+- ApplicativeDo
+- BlockArguments
+- DeriveAnyClass
+- DerivingVia
+- LambdaCase
+- NamedFieldPuns
+- NumDecimals
+- OverloadedLabels
+- OverloadedLists
+- OverloadedRecordDot
+- OverloadedStrings
+- MultiParamTypeClasses
+- NoStarIsType
+- PatternSynonyms
+- RecordWildCards
+- StrictData
+- BangPatterns
+- TypeAbstractions
+- TypeFamilies
+- FlexibleInstances
+- FlexibleContexts
+- DataKinds
+- TypeOperators
+- NoFieldSelectors
+- ScopedTypeVariables
+- TypeApplications
+- TupleSections
+- DeriveAnyClass
+- DeriveTraversable
+- DeriveGeneric

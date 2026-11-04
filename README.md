@@ -1,3 +1,67 @@
 # apecs-brillo
 
-Apecs' gloss package, but adapted for brillo
+The camera is already handled, you only have to pass in your own drawing, stepping and key handling functions. Check the `Apecs.Brillo` documentation to see the type signatures.
+
+```hs
+module Example where
+
+import Apecs qualified
+import Brillo qualified
+import Apecs.Brillo qualified as Brillo
+import System.Exit (exitSuccess)
+import Control.Monad (void)
+import Linear
+
+newtype Position = Position (V2 Float)
+  deriving Show
+
+instance Apecs.Component Position where
+  type Storage Position = Apecs.Map Position
+
+newtype Velocity = Velocity (V2 Float)
+  deriving Show
+
+instance Apecs.Component Velocity where
+  type Storage Velocity = Apecs.Map Velocity
+
+Apecs.makeWorld "World"
+  [ ''Brillo.Camera
+  , ''Position
+  , ''Velocity
+  ]
+
+main :: IO ()
+main = do
+  world <- initWorld
+  Apecs.runWith world do
+    initialise
+    Brillo.playWithApecs (Brillo.InWindow "Example" (800, 600) (10, 10)) Brillo.black 60 draw handleEvent step
+
+initialise :: Apecs.System World ()
+initialise = void do
+  Apecs.newEntity (Position 0, Velocity (V2 12 (-16)))
+  Apecs.newEntity (Position (V2 24 0), Velocity (V2 (-48) 8))
+  Apecs.newEntity (Position (V2 48 24), Velocity (V2 32 16))
+
+step :: Float -> Apecs.System World ()
+step dT = do
+  velocity dT
+  gravity dT
+
+velocity :: Float -> Apecs.System World ()
+velocity dT = Apecs.cmap \(Position pos, Velocity vel) -> Position $ pos + vel ^* dT
+
+gravity :: Float -> Apecs.System World ()
+gravity dT = Apecs.cmap \(Velocity vel) -> Position $ vel + gravityVel ^* dT
+  where gravityVel = V2 0 (-1)
+
+handleEvent :: Brillo.Event -> Apecs.System World ()
+handleEvent = \case
+  Brillo.EventKey (Brillo.SpecialKey Brillo.KeyEsc) Brillo.Down _ _ -> Apecs.liftIO exitSuccess
+  _ -> pure ()
+
+draw :: Apecs.System World Brillo.Picture
+draw = do
+  drawnEntities <- Brillo.cfoldDraw \(Position (V2 x y)) -> Brillo.Translate x y $ Brillo.circleSolid 10
+
+  pure $ Brillo.Color (Brillo.makeColorI 255 255 255 255) drawnEntities```

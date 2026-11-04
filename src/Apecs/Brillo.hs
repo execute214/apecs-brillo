@@ -2,17 +2,28 @@
 {-# LANGUAGE TypeFamilies     #-}
 
 module Apecs.Brillo
-  ( module Apecs.Brillo
-  , module G
+  ( Camera(..)
+
+  , Brillo.Event(..)
+  , Brillo.Key(..)
+  , Brillo.SpecialKey(..)
+  , Brillo.MouseButton(..)
+  , Brillo.KeyState(..)
+  , Brillo.Modifiers(..)
+
+  , playWithApecs
+
+  , cameraTransform
+  , windowToWorld
+
+  , cfoldDraw
+  , cfoldDrawM
   ) where
 
-import Data.Semigroup (Semigroup (..))
-import Brillo
-import Brillo.Interface.IO.Game as G
-import Linear.V2
-import Linear.Vector
-
-import Apecs
+import Brillo qualified
+import Brillo.Interface.IO.Game qualified as Brillo
+import Linear
+import Apecs qualified
 
 data Camera = Camera
   { camOffset :: V2 Float
@@ -20,49 +31,51 @@ data Camera = Camera
   } deriving (Eq, Show, Read)
 
 instance Semigroup Camera where
-  Camera x1 r1 <> Camera x2 r2 = Camera (x1 + x2) (r1 * r2)
+  Camera pos1 scale1 <> Camera pos2 scale2 = Camera (pos1 + pos2) (scale1 * scale2)
+
 instance Monoid Camera where
   mempty = Camera 0 1
   mappend = (<>)
 
--- | Apply a camera transformation to a picture
-cameraTransform :: Camera -> Picture -> Picture
-cameraTransform (Camera (V2 cx cy) cs) =
-    Scale cs cs .  Translate (-cx) (-cy)
+instance Apecs.Component Camera where type Storage Camera = Apecs.Global Camera
 
-windowToWorld :: Camera -> (Float,Float) -> V2 Float
-windowToWorld (Camera cx cs) (x,y) = V2 x y ^/ cs + cx
+playWithApecs
+  :: (Apecs.Has w IO Camera)
+  => Brillo.Display -- ^ Display mode
+  -> Brillo.Color -- ^ Background color
+  -> Int -- ^ Desired FPS
+  -> Apecs.System w Brillo.Picture -- ^ Drawing function
+  -> (Brillo.Event -> Apecs.System w ()) -- ^ Event handling function
+  -> (Float -> Apecs.System w ()) -- ^ Stepping function, with a time delta argument.
+  -> Apecs.System w ()
+playWithApecs disp col fps draw handle step = do
+    w <- Apecs.ask
+    Apecs.liftIO $ Brillo.playIO disp col fps w draw' handle' step'
+  where
+    handle' event = Apecs.runSystem $ handle event >> Apecs.ask
 
-instance Component Camera where
-  type Storage Camera = Global Camera
+    step' dT = Apecs.runSystem $ step dT >> Apecs.ask
 
-play
-  :: (Has w IO Camera)
-  => Display            -- ^ Display mode
-  -> Color              -- ^ Background color
-  -> Int                  -- ^ Desired FPS
-  -> System w Picture -- ^ Drawing function
-  -> (Event -> System w ()) -- ^ Event handling function
-  -> (Float  -> System w ()) -- ^ Stepping function, with a time delta argument.
-  -> System w ()
-play disp col fps draw handle step = do
-  w <- ask
-  liftIO$ playIO disp col fps w draw' handle' step'
-    where
-      handle' event = runSystem $ handle event >> ask
-      step'   dT    = runSystem $ step dT >> ask
-      draw'         = runSystem $ do
-        cam <- get global
-        cameraTransform cam <$> draw
+    draw' = Apecs.runSystem do
+      cam <- Apecs.get Apecs.global
+      cameraTransform cam <$> draw
+
+-- | Apply a camera transformation to a picture.
+cameraTransform :: Camera -> Brillo.Picture -> Brillo.Picture
+cameraTransform (Camera (V2 camX camY) camScale) = Brillo.Scale camScale camScale . Brillo.Translate (-camX) (-camY)
+
+-- | Translates a position from the camera's offset and scale.
+windowToWorld :: Camera -> (Float, Float) -> V2 Float
+windowToWorld (Camera camPos camScale) (x, y) = V2 x y ^/ camScale + camPos
 
 -- | Renders a picture given a component rendering function.
-foldDraw :: (Get w IO c, Members w IO c)
-         => (c -> Picture) -- ^ Component render function.
-         -> System w Picture
-foldDraw fn = cfold (\pic -> mappend pic . fn) mempty
+cfoldDraw :: (Apecs.Get w IO c, Apecs.Members w IO c)
+         => (c -> Brillo.Picture) -- ^ Component render function.
+         -> Apecs.System w Brillo.Picture
+cfoldDraw f = Apecs.cfold (\p -> mappend p . f) mempty
 
 -- | Monadically renders a picture given a component rendering function.
-foldDrawM :: (Get w IO c, Members w IO c)
-          => (c -> System w Picture) -- ^ Component render function.
-          -> System w Picture
-foldDrawM fn = cfoldM (\pic -> fmap (mappend pic) . fn) mempty
+cfoldDrawM :: (Apecs.Get w IO c, Apecs.Members w IO c)
+          => (c -> Apecs.System w Brillo.Picture) -- ^ Component render function.
+          -> Apecs.System w Brillo.Picture
+cfoldDrawM f = Apecs.cfoldM (\p -> fmap (mappend p) . f) mempty

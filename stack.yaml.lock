@@ -5,19 +5,19 @@
 
 packages:
 - completed:
-    hackage: brillo-2.0.0@sha256:c6b57ee1563dcb2438b25478aba9e38a87831c2f1ffb0c80b95021243aece3a3,3131
+    hackage: brillo-3.0.0@sha256:0023f2cc93d0140c1017ef83ed4dddfa31b96c3190f4254579b2ac7076daa91a,3166
     pantry-tree:
-      sha256: c9e227ceb943e6c7b31c0e71182b406d73c00832377c396e86220bf3500cb843
-      size: 3754
+      sha256: 69ab3de7a1d6b58306174e5d14835a8ad92110e41a9208d22b26fa4014f0dbca
+      size: 3829
   original:
-    hackage: brillo-2.0.0
+    hackage: brillo-3.0.0
 - completed:
-    hackage: brillo-rendering-2.0.0@sha256:0c41b1b0b4ed5c4e16471a7609b561d5d48625af429d5b971f85e7867c411150,1536
+    hackage: brillo-rendering-3.0.0@sha256:72277d0c4ca062b4ce60a8dd9612970e0c700d48841bbbc5477e8159d75100bc,1536
     pantry-tree:
-      sha256: c857676558e5d0ef28a404a1e505edcf9d303618f470553342615dcb912ab7fa
-      size: 1147
+      sha256: c02a8667a7ee4750c3e4f87ae6a8dd80e713d284e0be5fedaf851d0b85635dc2
+      size: 1148
   original:
-    hackage: brillo-rendering-2.0.0
+    hackage: brillo-rendering-3.0.0
 snapshots:
 - completed:
     sha256: a6882445afe04fd38791656e3667b491d92b9c27bcf18cda7e01c73016e828ee
