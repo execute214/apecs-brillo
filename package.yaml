@@ -11,7 +11,7 @@ extra-doc-files:
 
 synopsis: Apecs' gloss package, but adapted for brillo.
 category: Game engine
-description: A library that's meant to bridge the gap between brillo and gloss.
+description: A library that's meant to bridge the gap between brillo and apecs.
 
 library:
   source-dirs: src
